@@ -19,6 +19,7 @@
 		<title> Регистрация </title>
 		
 		<script src="https://code.jquery.com/jquery-1.8.3.js"></script>
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
@@ -43,7 +44,12 @@
 					<input name="_password" type="password" placeholder="" onkeypress="return PressToEnter(event)"/>
 					<div class = "sub-name">Повторите пароль:</div>
 					<input name="_passwordCopy" type="password" placeholder="" onkeypress="return PressToEnter(event)"/>
-					
+					<center>
+						<div class="g-recaptcha" data-sitekey="6Lc37YYsAAAAACRJmKQ0uzQm1m1h-xqCJqmGFwlV">
+						
+						</div>
+					</center>
+
 					<a href="login.php">Вернуться</a>
 					<input type="button" class="button" value="Зайти" onclick="RegIn()" style="margin-top: 0px;"/>
 					<img src = "img/loading.gif" class="loading" style="margin-top: 0px;"/>
@@ -66,15 +72,35 @@
 				var _password = document.getElementsByName("_password")[0].value;
 				var _passwordCopy = document.getElementsByName("_passwordCopy")[0].value;
 				
-				if(_login != "") {
-					if(_password != "") {
-						if(_password == _passwordCopy) {
+				if(_login == ""){
+					alert("Введите логин.");
+					return;
+				}
+				if(_password == ""){
+					alert("Введите пароль.");
+					return;
+				}
+
+				if(_password != _passwordCopy){
+					alert("Пароли не совпaдают.");
+					return;
+				}
+
+				var captcha = grecaptcha.getResponse();
+				if(captcha.length == 0){
+					alert("Необходимо пройти проверку на \"Я не робот\".");
+					return;
+				}
+
+
+				
 							loading.style.display = "block";
 							button.className = "button_diactive";
 							
 							var data = new FormData();
 							data.append("login", _login);
 							data.append("password", _password);
+							data.append("g-recaptcha-response", captcha);
 							
 							// AJAX запрос
 							$.ajax({
@@ -107,10 +133,8 @@
 									button.className = "button";
 								}
 							});
-						} else alert("Пароли не совподают.");
-					} else alert("Введите пароль.");
-				} else alert("Введите логин.");
-			}
+						}
+					
 			
 			function PressToEnter(e) {
 				if (e.keyCode == 13) {
