@@ -19,6 +19,7 @@
 		<title> Авторизация </title>
 		
 		<script src="https://code.jquery.com/jquery-1.8.3.js"></script>
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
@@ -26,7 +27,7 @@
 			<a href=#><img src = "img/logo1.png"/></a>
 			<div class="name">
 				<a href="index.php">
-					<div class="subname">БЗОПАСНОСТЬ  ВЕБ-ПРИЛОЖЕНИЙ</div>
+					<div class="subname">БЕЗОПАСНОСТЬ  ВЕБ-ПРИЛОЖЕНИЙ</div>
 					Пермский авиационный техникум им. А. Д. Швецова
 				</a>
 			</div>
@@ -41,7 +42,9 @@
 					<input name="_login" type="text" placeholder="" onkeypress="return PressToEnter(event)"/>
 					<div class = "sub-name">Пароль:</div>
 					<input name="_password" type="password" placeholder="" onkeypress="return PressToEnter(event)"/>
-					
+					<center>
+						<div class="g-recaptcha" data-sitekey="6Lc37YYsAAAAACRJmKQ0uzQm1m1h-xqCJqmGFwlV"></div>
+					</center>
 					<a href="regin.php">Регистрация</a>
 					<br><a href="recovery.php">Забыли пароль?</a>
 					<input type="button" class="button" value="Войти" onclick="LogIn()"/>
@@ -63,12 +66,18 @@
 				
 				var _login = document.getElementsByName("_login")[0].value;
 				var _password = document.getElementsByName("_password")[0].value;
+				var captcha = grecaptcha.getResponse();
+				if(captcha.length == 0){
+					alert("Необходимо пройти проверку на \"Я не робот\".");
+					return;
+				}
 				loading.style.display = "block";
 				button.className = "button_diactive";
 				
 				var data = new FormData();
 				data.append("login", _login);
 				data.append("password", _password);
+				data.append("g-recaptcha-response", captcha);
 				
 				// AJAX запрос
 				$.ajax({
